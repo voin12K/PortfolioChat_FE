@@ -1,5 +1,7 @@
+import Profile from "./components/ui/sap/profile/profile";
+
 export default function App(){
   return(
-    <div><p>1000</p></div>
+    <div><Profile/></div>
   )
 }
