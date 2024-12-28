@@ -1,7 +1,13 @@
-import Profile from "./components/ui/sap/profile/profile";
+import "./App.css";
+
+import SignIn from "./components/ui/sign/signIn/signin";
+import SignUp from "./components/ui/sign/singUp/signup";
 
 export default function App(){
   return(
-    <div><Profile/></div>
+    <div className="v">
+      <SignIn/>
+      <SignUp/>
+    </div>
   )
 }
