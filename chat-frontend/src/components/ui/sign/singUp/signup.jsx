@@ -1,34 +1,91 @@
-import React from "react";
+import React, { useState } from "react";
 import "./signup.scss";
 
 export default function SignUp() {
+    const [formData, setFormData] = useState({ name: "", username: "", email: "", password: "" });
+    const [message, setMessage] = useState("");
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setMessage("Регистрация успешна!");
+            } else {
+                setMessage(data.message || "Ошибка регистрации.");
+            }
+        } catch (error) {
+            setMessage("Ошибка соединения с сервером.");
+        }
+    };
+
     return (
         <div className="Reg">
             <h1 className="Reg-title">Sign Up</h1>
-            <div className="Reg-nameall">
-                <p className="Reg-name">Name</p>
-                <input className="Reg-name-input" />
-            </div>
-            <div className="Reg-usernameall">
-                <p className="Reg-username">Username</p>
-                <input className="Reg-username-input" />
-            </div>
-            <div className="Reg-emailall">
-                <p className="Reg-email">E-mail</p>
-                <input type="email" className="Reg-email-input" />
-            </div>
-            <div className="Reg-passwordall">
-                <p className="Reg-password">Password</p>
-                <input className="Reg-password-input" />
-            </div>
-            <p className="Reg-forgotpass">Forgot Password?</p>
-            <div className="Reg-buttall">
-                <button className="Reg-buttall-buttlog">Log Up</button>
-                <button className="Reg-buttall-buttlog-withG">Log Up with G</button>
-            </div>
-            <p className="Reg-login">
-                Have an account? <a href="#" className="Reg-login-link">Log In</a>
-            </p>
+            <form className="Reg-form" onSubmit={handleSubmit}>
+                <div className="Reg-nameall">
+                    <p className="Reg-name">Name</p>
+                    <input
+                        className="Reg-name-input"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="Reg-usernameall">
+                    <p className="Reg-username">Username</p>
+                    <input
+                        className="Reg-username-input"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="Reg-emailall">
+                    <p className="Reg-email">E-mail</p>
+                    <input
+                        type="email"
+                        className="Reg-email-input"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="Reg-passwordall">
+                    <p className="Reg-password">Password</p>
+                    <input
+                        type="password"
+                        className="Reg-password-input"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                    />
+                </div>
+                <p className="Reg-forgotpass">Forgot Password?</p>
+                <div className="Reg-buttall">
+                    <button type="submit" className="Reg-buttall-buttlog">
+                        Log Up
+                    </button>
+                    <button type="submit" className="Reg-buttall-buttlog-withG">
+                        Log Up win G
+                    </button>
+                </div>
+                <p className="Reg-login">
+                    Have an account? <a href="#" className="Reg-login-link">Log In</a>
+                </p>
+            </form>
+            <p>{message}</p>
         </div>
     );
 }

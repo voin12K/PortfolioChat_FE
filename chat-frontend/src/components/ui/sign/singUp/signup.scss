@@ -12,6 +12,11 @@
         justify-content: center;
     }
 
+    &-form{
+        display: flex;
+        flex-direction: column;
+    }
+
     &-nameall {
         display: flex;
         flex-direction: column;
