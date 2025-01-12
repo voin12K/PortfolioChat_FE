@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import "./signin.scss";
+import { ReactComponent as GoogleIcon } from "../../../../assets/icons/Google.svg";
 
-export default function SignIn() {
-    const [credentials, setCredentials] = useState({ email: "test@test.com", password: "1234" });
+export default function SignIn({ switchToSignUp }) {
+    const [credentials, setCredentials] = useState({ email: "", password: "" });
     const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
@@ -12,7 +13,6 @@ export default function SignIn() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(credentials);
         try {
             const response = await fetch("http://localhost:5000/api/auth/login", {
                 method: "POST",
@@ -21,17 +21,15 @@ export default function SignIn() {
             });
             const data = await response.json();
             if (response.ok) {
-                setMessage("Вход успешен!");
+                setMessage("Login successful!");
                 localStorage.setItem("token", data.token);
             } else {
-                console.log(data);
-                setMessage(data.message || "Ошибка входа.");
+                setMessage(data.message || "Login failed.");
             }
         } catch (error) {
-            setMessage("Ошибка соединения с сервером.");
+            setMessage("Error connecting to server.");
         }
     };
-    
 
     return (
         <div className="Login">
@@ -62,12 +60,18 @@ export default function SignIn() {
                     <button type="submit" className="Login-buttall-buttlog">
                         Log In
                     </button>
-                    <button type="submit" className="Login-buttall-buttlog-withG">
-                        Log In win G
+                    <button type="button" className="Login-buttall-buttlog-withG">
+                        Log In with <GoogleIcon />
                     </button>
                 </div>
                 <p className="Login-logup">
-                    Don’t have an account? <a href="#" className="Login-logup-link">Log Up</a>
+                    Don’t have an account?{" "}
+                    <span
+                        className="Login-logup-link"
+                        onClick={switchToSignUp}
+                    >
+                        Sign Up
+                    </span>
                 </p>
             </form>
             <p>{message}</p>

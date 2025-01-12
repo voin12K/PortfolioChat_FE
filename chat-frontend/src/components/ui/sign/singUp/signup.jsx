@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./signup.scss";
+import { ReactComponent as GoogleIcon } from "../../../../assets/icons/Google.svg";
 
-export default function SignUp() {
+export default function SignUp({ switchToSignIn }) {
     const [formData, setFormData] = useState({ name: "", username: "", email: "", password: "" });
     const [message, setMessage] = useState("");
 
@@ -18,15 +19,14 @@ export default function SignUp() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
-
             const data = await response.json();
             if (response.ok) {
-                setMessage("Регистрация успешна!");
+                setMessage("Registration successful!");
             } else {
-                setMessage(data.message || "Ошибка регистрации.");
+                setMessage(data.message || "Registration failed.");
             }
         } catch (error) {
-            setMessage("Ошибка соединения с сервером.");
+            setMessage("Error connecting to server.");
         }
     };
 
@@ -75,14 +75,20 @@ export default function SignUp() {
                 <p className="Reg-forgotpass">Forgot Password?</p>
                 <div className="Reg-buttall">
                     <button type="submit" className="Reg-buttall-buttlog">
-                        Log Up
+                        Sign Up
                     </button>
-                    <button type="submit" className="Reg-buttall-buttlog-withG">
-                        Log Up win G
+                    <button type="button" className="Reg-buttall-buttlog-withG">
+                        Sign Up with <GoogleIcon />
                     </button>
                 </div>
                 <p className="Reg-login">
-                    Have an account? <a href="#" className="Reg-login-link">Log In</a>
+                    Have an account?{" "}
+                    <span
+                        className="Reg-login-link"
+                        onClick={switchToSignIn}
+                    >
+                        Log In
+                    </span>
                 </p>
             </form>
             <p>{message}</p>

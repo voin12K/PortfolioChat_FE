@@ -1,0 +1,23 @@
+.Auth-all {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+}
+
+.Auth {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  width: 50%;
+  height: 100%; 
+}
+
+.Chat {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  width: 50%; 
+  height: 100%; 
+}
