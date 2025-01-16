@@ -3,6 +3,6 @@ import "./profile.scss"
 
 export default function Profile(){
     return(
-        <div className="bobo"></div>
+        <div className=""></div>
     )
 }

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import "./auth.scss";
 import SignIn from "../ui/sign/signIn/signin";
 import SignUp from "../ui/sign/singUp/signup";
+import VisChat from "../ui/sign/vischat/vischat";
 
 export default function Auth() {
     const [isSignIn, setIsSignIn] = useState(true);
@@ -25,6 +26,7 @@ export default function Auth() {
                 </motion.div>
             </div>
             <div className="Chat">
+                <VisChat/>
             </div>
         </div>
 
