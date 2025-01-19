@@ -9,6 +9,10 @@
     gap: 10px;
     box-sizing: border-box;
     padding-left: 15px;
+    transition: border 0.3s, background-color 0.3s;
+    &:focus-within {
+        border: 1px solid #58C1E8;
+    }
 
     &-input{
         height: 30px;
