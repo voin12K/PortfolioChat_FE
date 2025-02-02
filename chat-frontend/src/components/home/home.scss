@@ -1,0 +1,19 @@
+.Home {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    &-under {
+        display: flex;
+        flex-grow: 1;
+        align-items: flex-end;
+    }
+}
+
+.Peoples {
+    flex-grow: 1;
+}
+
+.Chats {
+    margin-left: auto;
+}

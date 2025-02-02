@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthContext";
 import "./signin.scss";
 import { ReactComponent as GoogleIcon } from "../../../../assets/icons/Google.svg";
 
 export default function SignIn({ switchToSignUp }) {
     const [credentials, setCredentials] = useState({ email: "", password: "" });
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,8 +25,8 @@ export default function SignIn({ switchToSignUp }) {
             });
             const data = await response.json();
             if (response.ok) {
-                setMessage("Login successful!");
-                localStorage.setItem("token", data.token);
+                login(data.token);
+                navigate("/");
             } else {
                 setMessage(data.message || "Login failed.");
             }
@@ -66,10 +70,7 @@ export default function SignIn({ switchToSignUp }) {
                 </div>
                 <p className="Login-logup">
                     Don’t have an account?{" "}
-                    <span
-                        className="Login-logup-link"
-                        onClick={switchToSignUp}
-                    >
+                    <span className="Login-logup-link" onClick={switchToSignUp}>
                         Sign Up
                     </span>
                 </p>
