@@ -22,8 +22,53 @@
         border: none;
         outline: none;
         color: #fff;
+        caret-color: #58C1E8;
         &::placeholder{
             color: #fff;
         }
     }
 }
+
+.Search-dropdown {
+    position: absolute;
+    width: 445px;
+    height: 985px;
+    background-color: #333333;
+    left: 0;
+    bottom: 0;
+}
+
+.Search-close {
+    display: block;
+    margin-bottom: 5px;
+    padding: 5px 10px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.Search-results {
+    list-style: none;
+    padding: 0;
+    color: black;
+    overflow-y: auto;
+}
+
+.Search-results li {
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: #807F7F;
+    border-radius: 10px;
+    width: 425px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Search-results li:hover {
+    background: #f0f0f0;
+}
+

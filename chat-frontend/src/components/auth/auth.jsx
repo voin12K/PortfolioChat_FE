@@ -25,7 +25,7 @@ export default function Auth() {
                     )}
                 </motion.div>
             </div>
-            <div className="Chat">
+            <div className="Chat-auth">
                 <VisChat/>
             </div>
         </div>
