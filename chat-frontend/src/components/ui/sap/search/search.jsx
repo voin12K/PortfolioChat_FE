@@ -13,7 +13,6 @@ export default function Search() {
     
     const navigate = useNavigate();
   
-    // Получаем ID текущего пользователя из токена
     const getMyIdFromToken = () => {
       const token = localStorage.getItem("token");
       if (!token) return null;
@@ -41,7 +40,6 @@ export default function Search() {
             }
           });
     
-          // Убираем текущего пользователя из результатов
           const filteredResults = response.data.filter(user => user._id !== myId);
     
           setResults(filteredResults);
@@ -85,10 +83,8 @@ export default function Search() {
           }
         };
     
-        // Получаем все чаты пользователя
         const { data: chats = [] } = await axios.get('http://localhost:5000/api/chats/my', config);
     
-        // Проверка существующего приватного чата
         const existingChat = chats.find(chat =>
           !chat.isGroup &&
           Array.isArray(chat.users) &&
@@ -101,7 +97,6 @@ export default function Search() {
           return;
         }
     
-        // Создаём новый приватный чат
         const { data: newChat } = await axios.post(
           'http://localhost:5000/api/chats/private',
           { userId1: myId, userId2: userId },
