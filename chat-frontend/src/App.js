@@ -21,7 +21,7 @@ export default function App() {
           </AuthRoute>
         }
       />
-      <Route path="/chat/:id" element={<Chat/>}/>
+      <Route path="/chat/:ChatId" element={<Chat/>}/>
     </Routes>
   );
 }
