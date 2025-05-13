@@ -24,7 +24,7 @@
     }
   }
 
-&-content {
+  &-content {
     display: flex;
     flex-grow: 1;
     width: 100%;
@@ -38,16 +38,19 @@
       padding: 0 16px;
       display: flex;
       box-sizing: border-box;
-
-      @media (min-width: 1920px) {
-        max-width: 1920px;
-      }
     }
   }
 }
 
 .peoples {
-  flex-grow: 1;
+  height: 100%;
+  overflow-y: auto;
+  flex-shrink: 0; /* предотвращает сжатие */
+  margin-right: 20px; /* отступ между peoples и chat */
+}
+
+.chat {
+  flex-grow: 1; /* занимает всё оставшееся пространство */
   height: 100%;
   overflow-y: auto;
 }

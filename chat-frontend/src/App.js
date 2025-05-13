@@ -9,19 +9,25 @@ import Chat from "./components/ui/chat/chat";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={
+      <Route
+        path="/"
+        element={
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
         }
-      />
-      <Route path="/auth" element={
+      >
+        <Route path="chat/:ChatId" element={<Chat />} />
+      </Route>
+
+      <Route
+        path="/auth"
+        element={
           <AuthRoute>
             <Auth />
           </AuthRoute>
         }
       />
-      <Route path="/chat/:ChatId" element={<Chat/>}/>
     </Routes>
   );
 }

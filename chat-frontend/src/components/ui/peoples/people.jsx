@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import "./people.scss";
 import axios from "axios";
 import { format } from 'date-fns';
+import { useNavigate } from "react-router-dom";
 
 export default function People() {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -43,6 +45,10 @@ export default function People() {
     return format(date, 'HH:mm');
   };
 
+  const handleChatClick = (chatId) => {
+    navigate(`/chat/${chatId}`);
+  };
+
   return (
     <div className="People">
       <div className="People-wrapper">
@@ -56,7 +62,12 @@ export default function People() {
               <p className="no-chats">No active chats found</p>
             ) : (
               chats.map((chat) => (
-                <div key={chat._id} className="People-item">
+                <div 
+                  key={chat._id} 
+                  className="People-item"
+                  onClick={() => handleChatClick(chat._id)}
+                  style={{ cursor: 'pointer' }} 
+                >
                   {chat.type === 'private' ? (
                     <div className="chat-info">
                       <div className="avatar-and-content">
@@ -68,7 +79,7 @@ export default function People() {
                               {user.profileImage ? (
                                 <img src={user.profileImage} alt={user.name} className="avatar" />
                               ) : (
-                                <div className="avatar">{user.name.charAt(0)}</div>
+                                <div className="avatar">{user.name.charAt(0).toUpperCase()}</div>
                               )}
                               <div className="content-wrapper">
                                 <div className="name-and-time">

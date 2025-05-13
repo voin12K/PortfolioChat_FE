@@ -1,11 +1,337 @@
-.Chat{
-    width: 1445px;
-    height: 985px;
-    background-color: #333333; 
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0 auto;
+  background-color: #333333;
+  border-radius: 20px 0 0 0; 
 }
 
-.Messeges{
-    width: 300px;
-    height: 200px;
-    border: #ffff 2px solid;
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 15px;
+
+  .no-messages {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #999;
+    font-size: 18px;
+  }
+}
+
+.message-date {
+  text-align: center;
+  margin: 20px 0;
+  color: #fffefe;
+  font-size: 14px;
+  position: relative;
+
+  &:before, &:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #5D5D5D;
+  }
+
+  &:before {
+    left: 0;
+  }
+
+  &:after {
+    right: 0;
+  }
+}
+
+
+
+
+.message-wrapper {
+  display: flex;
+  margin-bottom: 8px;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+
+  &.own-message {
+    justify-content: flex-end; // Выравниваем свои сообщения вправо
+    
+    .message-content {
+      margin-right: 10px;
+      order: -1; // Сообщение перед аватаркой
+    }
+    
+    .message-bubble {
+      background-color: #e3f3cb;
+      
+      .message-time {
+        color: #5a9e4c;
+      }
+    }
+    
+    .message-avatar {
+      margin-left: 10px;
+      margin-right: 0;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-top: 2px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #58C1E8, #A557D9);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+  }
+}
+
+.message-content {
+  max-width: 65%;
+}
+
+.message-bubble {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  word-break: break-word;
+  position: relative;
+  
+  .message-text {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  
+  .message-time {
+    float: right;
+    margin-left: 8px;
+    margin-top: 2px;
+    font-size: 11px;
+    color: #707579;
+    position: relative;
+    bottom: -3px;
+  }
+}
+
+.message-form {
+  display: flex;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  position: sticky;
+  bottom: 0;
+  gap: 10px;
+
+  input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #ddd;
+    border-radius: 30px;
+    outline: none;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+    }
+
+    &::placeholder {
+      color: #999;
+    }
+  }
+
+  button {
+    padding: 0 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #0069d9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &::after {
+      content: "→";
+      margin-left: 8px;
+      font-size: 18px;
+    }
+  }
+}
+
+/* Обновленные стили для формы с эмодзи */
+.message-form {
+  display: flex;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  position: sticky;
+  bottom: 0;
+  gap: 10px;
+}
+
+.message-input-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 30px;
+  border: 2px solid #ddd;
+  padding-left: 10px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.message-input-container:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+}
+
+.emoji-trigger-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.emoji-trigger-btn:hover {
+  color: #007bff;
+  transform: scale(1.1);
+}
+
+.emoji-icon {
+  font-size: 20px;
+}
+
+.emoji-picker-container {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  z-index: 1000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.message-text-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background: transparent;
+  color: #333;
+}
+
+.message-text-input::placeholder {
+  color: #999;
+}
+
+.send-message-btn {
+  padding: 0 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-message-btn:hover {
+  background-color: #0069d9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.send-message-btn:active {
+  transform: translateY(0);
+}
+
+.send-message-btn::after {
+  content: "→";
+  margin-left: 8px;
+  font-size: 18px;
+}
+
+/* Адаптация для темной темы чата */
+.chat-container .message-form {
+  background-color: #2d2d2d;
+  border-top-color: #3d3d3d;
+}
+
+.chat-container .message-input-container {
+  background-color: #3a3a3a;
+  border-color: #4a4a4a;
+}
+
+.chat-container .message-text-input {
+  color: #f0f0f0;
+  background-color: transparent;
+}
+
+.chat-container .message-text-input::placeholder {
+  color: #888;
+}
+
+.chat-container .emoji-trigger-btn {
+  color: #888;
+}
+
+.chat-container .emoji-trigger-btn:hover {
+  color: #58a6ff;
 }
