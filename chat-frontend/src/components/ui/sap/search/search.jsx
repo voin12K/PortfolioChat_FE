@@ -25,6 +25,14 @@ export default function Search() {
       }
     };
   
+
+    useEffect(() => {
+      if (!search) {
+        setResults([]);
+        setError(null);
+      }
+    }, [search]);
+    
     useEffect(() => {
       if (!search) return;
     
@@ -118,22 +126,35 @@ export default function Search() {
     };
     
 
-    return (
-        <div className="Search">
-            <SearchIcon />
-            <input
-                className="Search-input"
-                placeholder="Search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onFocus={() => setShowResults(true)}
-            />
-            {loading && <div className="Search-loading">Загрузка...</div>}
-            {error && <div className="Search-error">{error}</div>}
+   return (
+        <div className="search-wrapper">
+            {showResults && (
+                <button 
+                    className="search-close-btn" 
+                    onClick={() => {
+                        setShowResults(false);
+                        setSearch("");
+                    }}
+                >
+                    ×
+                </button>
+            )}
+            
+            <div className={`Search ${showResults ? 'search-active' : ''}`}>
+                <SearchIcon />
+                <input
+                    className="Search-input"
+                    placeholder="Search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onFocus={() => setShowResults(true)}
+                />
+                {loading && <div className="Search-loading">Загрузка...</div>}
+                {error && <div className="Search-error">{error}</div>}
+            </div>
 
             {showResults && (
                 <div className="Search-dropdown">
-                    <button className="Search-close" onClick={() => setShowResults(false)}>Закрыть</button>
                     <ul className="Search-results">
                         {results.length > 0 ? (
                             results.map((user) => (
@@ -146,7 +167,7 @@ export default function Search() {
                                 </li>
                             ))
                         ) : (
-                            <li>Нет данных</li>
+                            <li className="no-results">Нет результатов</li>
                         )}
                     </ul>
                 </div>
