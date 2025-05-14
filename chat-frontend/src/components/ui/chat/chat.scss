@@ -164,6 +164,61 @@
   }
 }
 
+  .reply-preview {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    overflow: hidden;
+    background-color: #58C1E8;
+}
+.replying-to {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f1f1f1;
+  border-left: 4px solid #007bff;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  animation: fadeIn 0.3s ease-in-out;
+
+
+    .reply-author {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #007bff;
+      margin-bottom: 4px;
+    }
+
+    .reply-text {
+      font-size: 0.85rem;
+      color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .cancel-reply {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+
+
+.replying-to.fade-out {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+
 .message-content {
   max-width: 65%;
 }

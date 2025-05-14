@@ -52,6 +52,8 @@ export default function Chat() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, message: null });
   const [selectedMessageId, setSelectedMessageId] = useState(null); 
+  const [editingMessage, setEditingMessage] = useState(null); 
+  const [replyingTo, setReplyingTo] = useState(null); 
   const messageContainerRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const currentUser = getUserFromToken();
@@ -193,38 +195,78 @@ export default function Chat() {
     setShowEmojiPicker(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim()) {
+      console.error("Message content cannot be empty");
+      return;
+    }
 
-    const messageData = {
-      chatId,
-      content: input,
-    };
+    if (editingMessage) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/messages/${editingMessage._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ content: input }),
+        });
 
-    const tempId = `temp-${Date.now()}`;
-    const tempMessage = {
-      _id: tempId,
-      content: input,
-      sender: {
-        _id: currentUser.id,
-        username: currentUser.username,
-      },
-      createdAt: new Date().toISOString(),
-      isOptimistic: true,
-      tempId
-    };
-    
-    setMessages((prev) => [...prev, tempMessage]);
-    setInput("");
-    setShowEmojiPicker(false);
+        if (!response.ok) {
+          throw new Error(`Failed to edit message: ${response.statusText}`);
+        }
 
-    socket.emit("sendMessage", messageData, (response) => {
-      if (!response.success) {
-        console.error("Failed to send message:", response.error);
-        setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+        const updatedMessage = await response.json();
+        setMessages((prev) =>
+          prev.map((msg) => (msg._id === updatedMessage._id ? updatedMessage : msg))
+        );
+        console.log("Message updated successfully:", updatedMessage);
+      } catch (error) {
+        console.error("Failed to update message:", error);
       }
-    });
+
+      setEditingMessage(null);
+    } else {
+      const tempId = `temp-${Date.now()}`;
+      const tempMessage = {
+        _id: tempId,
+        content: input,
+        sender: {
+          _id: currentUser.id,
+          username: currentUser.username,
+        },
+        createdAt: new Date().toISOString(),
+        isOptimistic: true,
+        tempId,
+        replyTo: replyingTo,
+      };
+
+      setMessages((prev) => [...prev, tempMessage]);
+      setInput("");
+
+      socket.emit(
+        "sendMessage",
+        {
+          chatId,
+          content: input,
+          messageType: "text",
+          attachments: [],
+          replyTo: replyingTo ? replyingTo._id : null,
+        },
+        (response) => {
+          if (!response.success) {
+            console.error("Failed to send message:", response.error);
+            alert(response.error); // Отображение ошибки пользователю
+          } else {
+            console.log("Message sent successfully:", response.messageId);
+          }
+        }
+      );
+    }
+
+    // Сбрасываем состояние ответа
+    setReplyingTo(null);
   };
 
   const handleContextMenu = (e, message) => {
@@ -274,15 +316,20 @@ export default function Chat() {
   
 
   const handleEditMessage = (message) => {
-    setInput(message.content);
+    setInput(message.content); 
+    setEditingMessage(message); 
     setContextMenu({ visible: false, x: 0, y: 0, message: null });
     setSelectedMessageId(null);
   };
 
   const handleReplyMessage = (message) => {
-    setInput(`@${message.sender.username}: `);
+    setReplyingTo(message); 
     setContextMenu({ visible: false, x: 0, y: 0, message: null });
-    setSelectedMessageId(null); 
+    setSelectedMessageId(null);
+  };
+
+  const handleCancelReply = () => {
+    setReplyingTo(null); 
   };
 
   return (
@@ -309,7 +356,7 @@ export default function Chat() {
                 )}
                   <div
                     key={message._id}
-                    className={`message-wrapper ${isOwn ? 'own-message' : ''} ${selectedMessageId === message._id ? 'selected-message' : ''}`}
+                    className={`message-wrapper ${isOwn ? 'own-message' : ''} ${selectedMessageId === message._id ? 'selected-message' : ''} ${message.replyTo ? 'reply-to' : ''}`}
                     onContextMenu={(e) => handleContextMenu(e, message)}
                   >
                     <div className="message-avatar">
@@ -323,10 +370,17 @@ export default function Chat() {
                     </div>
                     
                     <div className="message-content">
+                      {message.replyTo && (
+                        <div className="reply-preview">
+                          <span className="reply-author">{message.replyTo.sender?.username || "Unknown"}</span>
+                          <div className="reply-text">{message.replyTo.content}</div>
+                        </div>
+                      )}
                       <div className="message-bubble">
                         <div className="message-text">{message.content}</div>
                         <span className="message-time">
                           {formatMessageTime(message.createdAt)}
+                          {message.edited?.isEdited && <span className="edited-label">(edited)</span>}
                         </span>
                       </div>
                     </div>
@@ -345,11 +399,23 @@ export default function Chat() {
         >
           <button onClick={() => handleReplyMessage(contextMenu.message)}>Reply</button>
           <button onClick={() => handleEditMessage(contextMenu.message)}>Edit</button>
-          <button onClick={() => {console.log("Delete button clicked"); handleDeleteMessage(contextMenu.message)}}>Delete</button>
+          <button onClick={() => handleDeleteMessage(contextMenu.message)}>Delete</button>
         </div>
       )}
 
       <form className="message-form" onSubmit={handleSubmit}>
+        {replyingTo && (
+          <div className="replying-to">
+            <span>Replying to:</span>
+            <div className="reply-preview">
+              <span className="reply-author">{replyingTo.sender?.username || "Unknown"}</span>
+              <div className="reply-text">{replyingTo.content}</div>
+            </div>
+            <button type="button" className="cancel-reply" onClick={handleCancelReply}>
+              ✕
+            </button>
+          </div>
+        )}
         <div className="input-container">
           <button 
             type="button" 
@@ -363,7 +429,7 @@ export default function Chat() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
+            placeholder={replyingTo ? "Write a reply..." : "Type a message..."}
           />
           <button type="submit"><SendIcon className="send-icon"/></button>
         </div>
