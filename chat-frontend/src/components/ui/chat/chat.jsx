@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react';
 import "./chat.scss";
 import { io } from "socket.io-client";
 import { format } from 'date-fns';
-import EmojiPicker from 'emoji-picker-react';
+import { ReactComponent as EmojiIcon } from "../../../assets/icons/emoji.svg";
+import { ReactComponent as SendIcon } from "../../../assets/icons/send.svg";
 
 
 
@@ -49,9 +51,23 @@ export default function Chat() {
   const { ChatId: chatId } = useParams();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messageContainerRef = useRef(null);
+  const emojiPickerRef = useRef(null);
   const currentUser = getUserFromToken();
-  
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -147,6 +163,11 @@ export default function Chat() {
     }
   }, [messages]);
 
+  const handleEmojiClick = (emojiData) => {
+    setInput(prev => prev + emojiData.emoji);
+    setShowEmojiPicker(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -171,6 +192,7 @@ export default function Chat() {
     
     setMessages((prev) => [...prev, tempMessage]);
     setInput("");
+    setShowEmojiPicker(false);
 
     socket.emit("sendMessage", messageData, (response) => {
       if (!response.success) {
@@ -230,13 +252,34 @@ export default function Chat() {
       </div>
 
       <form className="message-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button type="submit">Send</button>
+        <div className="input-container">
+          <button 
+            type="button" 
+            className="emoji-button"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          >
+            <EmojiIcon  className="emoji-icon" />
+          </button>
+          <input
+            className="message-input"
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type a message..."
+          />
+          <button type="submit"><SendIcon className="send-icon"/></button>
+        </div>
+        {showEmojiPicker && (
+        <div className="emoji-picker-wrapper" ref={emojiPickerRef}>
+          <EmojiPicker 
+            onEmojiClick={handleEmojiClick}
+            width={300}
+            height={400}
+            emojiStyle={EmojiStyle.NATIVE}  
+            theme={Theme.DARK}              
+          />
+        </div>
+        )}
       </form>
     </div>
   );

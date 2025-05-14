@@ -44,7 +44,6 @@
 
 .peoples {
   height: 100%;
-  overflow-y: auto;
   flex-shrink: 0; /* предотвращает сжатие */
   margin-right: 20px; /* отступ между peoples и chat */
 }
@@ -52,5 +51,4 @@
 .chat {
   flex-grow: 1; /* занимает всё оставшееся пространство */
   height: 100%;
-  overflow-y: auto;
 }
