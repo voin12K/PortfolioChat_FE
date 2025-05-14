@@ -7,8 +7,6 @@ import { format } from 'date-fns';
 import { ReactComponent as EmojiIcon } from "../../../assets/icons/emoji.svg";
 import { ReactComponent as SendIcon } from "../../../assets/icons/send.svg";
 
-
-
 const socket = io("http://localhost:5000", {
   auth: {
     token: localStorage.getItem("token"),
@@ -52,22 +50,37 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, message: null });
+  const [selectedMessageId, setSelectedMessageId] = useState(null); 
   const messageContainerRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const currentUser = getUserFromToken();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
-        setShowEmojiPicker(false);
+      if (
+        emojiPickerRef.current && emojiPickerRef.current.contains(event.target)
+      ) {
+        return;
       }
+    
+      if (
+        contextMenu.visible &&
+        event.target.closest(".context-menu")
+      ) {
+        return;
+      }
+    
+      setShowEmojiPicker(false);
+      setContextMenu({ visible: false, x: 0, y: 0, message: null });
+      setSelectedMessageId(null);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [contextMenu]);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -163,6 +176,18 @@ export default function Chat() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    const handleDeletedMessage = ({ messageId }) => {
+      setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+    };
+
+    socket.on("messageDeleted", handleDeletedMessage);
+
+    return () => {
+      socket.off("messageDeleted", handleDeletedMessage);
+    };
+  }, []);
+
   const handleEmojiClick = (emojiData) => {
     setInput(prev => prev + emojiData.emoji);
     setShowEmojiPicker(false);
@@ -202,6 +227,64 @@ export default function Chat() {
     });
   };
 
+  const handleContextMenu = (e, message) => {
+    e.preventDefault();
+    console.log("Context menu opened for message:", message);
+    setSelectedMessageId(message._id);
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+      message,
+    });
+  };
+
+  const handleDeleteMessage = async (message) => {
+    console.log("Delete button clicked for message:", message);
+    console.log("Message ID to delete:", message._id);
+    console.log("Current messages:", messages);
+  
+    const confirmDelete = window.confirm("Are you sure you want to delete this message?");
+    if (!confirmDelete) return;
+  
+    setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
+  
+    try {
+      const response = await fetch(`http://localhost:5000/api/messages/${message._id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to delete message: ${response.statusText}`);
+      }
+  
+      console.log("Message deleted successfully from the server");
+      socket.emit("deleteMessage", { messageId: message._id });
+    } catch (error) {
+      console.error("Failed to delete message from the server:", error);
+      setMessages((prev) => [...prev, message]);
+    }
+  
+    setContextMenu({ visible: false, x: 0, y: 0, message: null });
+    setSelectedMessageId(null);
+  };
+  
+
+  const handleEditMessage = (message) => {
+    setInput(message.content);
+    setContextMenu({ visible: false, x: 0, y: 0, message: null });
+    setSelectedMessageId(null);
+  };
+
+  const handleReplyMessage = (message) => {
+    setInput(`@${message.sender.username}: `);
+    setContextMenu({ visible: false, x: 0, y: 0, message: null });
+    setSelectedMessageId(null); 
+  };
+
   return (
     <div className="chat-container">
       <div className="messages-container" ref={messageContainerRef}>
@@ -224,7 +307,11 @@ export default function Chat() {
                     <span>{formatDisplayDate(message.createdAt)}</span>
                   </div>
                 )}
-                  <div className={`message-wrapper ${isOwn ? 'own-message' : ''}`}>
+                  <div
+                    key={message._id}
+                    className={`message-wrapper ${isOwn ? 'own-message' : ''} ${selectedMessageId === message._id ? 'selected-message' : ''}`}
+                    onContextMenu={(e) => handleContextMenu(e, message)}
+                  >
                     <div className="message-avatar">
                       {message.sender?.profileImage ? (
                         <img src={message.sender.profileImage} alt={message.sender.username} />
@@ -250,6 +337,17 @@ export default function Chat() {
           }, [])
         )}
       </div>
+
+      {contextMenu.visible && (
+        <div
+          className="context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          <button onClick={() => handleReplyMessage(contextMenu.message)}>Reply</button>
+          <button onClick={() => handleEditMessage(contextMenu.message)}>Edit</button>
+          <button onClick={() => {console.log("Delete button clicked"); handleDeleteMessage(contextMenu.message)}}>Delete</button>
+        </div>
+      )}
 
       <form className="message-form" onSubmit={handleSubmit}>
         <div className="input-container">

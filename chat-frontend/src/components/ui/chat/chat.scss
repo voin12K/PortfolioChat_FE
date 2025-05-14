@@ -68,7 +68,37 @@
 }
 
 
+.context-menu {
+  position: absolute;
+  background: #333;
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1100;
+  padding: 10px;
+}
 
+.context-menu button {
+  display: block;
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.context-menu button:hover {
+  background: #444;
+}
+
+.selected-message {
+  background-color: rgba(0, 0, 0, 0.2);
+  outline: 2px solid #2f2f30;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
 
 .message-wrapper {
   display: flex;
