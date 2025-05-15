@@ -1,142 +1,83 @@
 .Reg {
-    height: 700px;
+    height: 800px;
     width: 500px;
     background-color: #333333;
     display: flex;
     flex-direction: column;
     border-radius: 20px;
-
-    &-error {
-    color: red;
-    font-size: 0.8rem;
-    margin-top: 0.2rem;
-    display: block;
-    }
+    padding: 20px;
+    box-sizing: border-box;
 
     &-title {
         color: #fff;
         display: flex;
         justify-content: center;
+        margin-bottom: 20px;
     }
 
-    &-form{
+    &-form {
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
     }
 
-    &-nameall {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-    }
-
-    &-name {
-        color: #fff;
-        font-size: 24px;
-        align-self: flex-start;
-        margin-left: 30px; 
-        margin-bottom: 5px;
-
-        &-input {
-            width: 430px;
-            height: 35px;
-            background-color: transparent;
-            border-radius: 10px;
-            outline: none;
-            border: 2px solid #58C1E8; 
-            color: #fff;
-            padding-left: 10px;
-        }
-    }
-
-    &-usernameall {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-    }
-
-    &-username {
-        color: #fff;
-        font-size: 24px;
-        align-self: flex-start;
-        margin-left: 30px; 
-        margin-bottom: 5px;
-
-        &-input {
-            width: 430px;
-            height: 35px;
-            background-color: transparent;
-            border-radius: 10px;
-            outline: none;
-            border: 2px solid #58C1E8; 
-            color: #fff;
-            padding-left: 10px;
-        }
-    }
-
-    &-emailall {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-    }
-
-    &-email {
-        color: #fff;
-        font-size: 24px;
-        align-self: flex-start;
-        margin-left: 30px; 
-        margin-bottom: 5px;
-
-        &-input {
-            width: 430px;
-            height: 35px;
-            background-color: transparent;
-            border-radius: 10px;
-            outline: none;
-            border: 2px solid #58C1E8; 
-            color: #fff;
-            padding-left: 10px;
-        }
-    }
-
+    &-nameall,
+    &-usernameall,
+    &-emailall,
     &-passwordall {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
+        margin-bottom: 30px;
     }
 
+    &-name,
+    &-username,
+    &-email,
     &-password {
         color: #fff;
         font-size: 24px;
         align-self: flex-start;
-        margin-left: 30px; 
+        margin-left: 30px;
         margin-bottom: 5px;
-
-        &-input {
-            width: 430px;
-            height: 35px;
-            background-color: transparent;
-            border-radius: 10px;
-            outline: none;
-            border: 2px solid #58C1E8; 
-            color: #fff;
-            padding-left: 10px;
-        }
     }
 
+    &-name-input,
+    &-username-input,
+    &-email-input,
+    &-password-input {
+        width: 430px;
+        height: 35px;
+        background-color: transparent;
+        border-radius: 10px;
+        outline: none;
+        border: 2px solid #58C1E8;
+        color: #fff;
+        padding-left: 10px;
+        font-size: 16px;
+    }
 
-    &-buttall{
+    &-error {
+        position: absolute;
+        bottom: -20px;
+        left: 30px;
+        color: #ff4d4d;
+        font-size: 14px;
+        height: 20px;
+    }
+
+    &-buttall {
+        margin-top: auto;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 20px;
-        padding-top: 30px;
+        margin-bottom: 20px;
 
-        &-buttlog{
+        &-buttlog,
+        &-buttlog-withG {
             width: 430px;
             height: 35px;
             display: flex;
@@ -149,35 +90,23 @@
             cursor: pointer;
             font-size: 20px;
 
-            &:hover{
+            &:hover {
                 background-color: #666565;
             }
         }
-        &-buttlog-withG{
-            width: 430px;
-            height: 35px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-            color: #fff;
-            background-color: #807F7F;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            gap: 5px;
 
-            &:hover{
-                background-color: #666565;
-            }
+        &-buttlog-withG {
+            gap: 5px;
         }
     }
 
     &-login {
         display: flex;
-        align-self: center;
+        justify-content: center;
         color: #fff;
         gap: 5px;
+        margin-top: auto;
+        margin-bottom: 10px;
 
         &-link {
             color: #fff;
@@ -189,5 +118,4 @@
             }
         }
     }
-
 }

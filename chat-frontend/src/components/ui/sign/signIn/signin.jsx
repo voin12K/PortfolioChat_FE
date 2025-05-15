@@ -16,10 +16,10 @@ export default function SignIn({ switchToSignUp }) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(credentials.email)) {
-            newErrors.email = "Введите корректный e-mail";
+            newErrors.email = "Please enter a valid email address";
         }
         if (credentials.password.length < 8) {
-            newErrors.password = "Пароль должен быть не менее 8 символов";
+            newErrors.password = "Password must be at least 8 characters long";
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -89,7 +89,6 @@ const handleSubmit = async (e) => {
                     />
                     {errors.password && <span className="Login-error">{errors.password}</span>}
                 </div>
-                <p className="Login-forgotpass">Forgot Password?</p>
                 <div className="Login-buttall">
                     <button type="submit" className="Login-buttall-buttlog">
                         Log In

@@ -469,7 +469,7 @@ export default function Chat() {
             <div className="reply-preview">
               <span className="reply-author">{replyingTo.sender?.username || "Unknown"}</span>
               <div className="reply-text">
-                {truncateText(replyingTo.content, 50)} {/* Ограничение длины текста */}
+                {truncateText(replyingTo.content, 50)}
               </div>
             </div>
             <button type="button" className="cancel-reply" onClick={handleCancelReply}>
