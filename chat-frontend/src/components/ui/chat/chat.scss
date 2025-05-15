@@ -254,6 +254,10 @@
     flex-shrink: 0;
     white-space: nowrap;
     align-self: flex-end;
+
+    .edited-label{
+      margin-left: 5px;
+    }
   }
 }
 

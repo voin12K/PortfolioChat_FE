@@ -141,5 +141,12 @@
             }
         }
     }
+      &-error {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: 4px;
+    align-self: flex-start;
+    margin-left: 30px;
+  }
 
 }
