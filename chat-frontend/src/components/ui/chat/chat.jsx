@@ -6,6 +6,7 @@ import { io } from "socket.io-client";
 import { format } from 'date-fns';
 import { ReactComponent as EmojiIcon } from "../../../assets/icons/emoji.svg";
 import { ReactComponent as SendIcon } from "../../../assets/icons/send.svg";
+import { Toaster, toast } from 'sonner'; 
 
 const socket = io("http://localhost:5000", {
   auth: {
@@ -43,6 +44,13 @@ const formatDisplayDate = (dateString) => {
 const formatMessageTime = (dateString) => {
   const date = new Date(dateString);
   return format(date, 'HH:mm');
+};
+
+const truncateText = (text, maxLength) => {
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + "...";
+  }
+  return text;
 };
 
 export default function Chat() {
@@ -190,6 +198,24 @@ export default function Chat() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleUserUpdated = (updatedUser) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.sender._id === updatedUser._id
+            ? { ...msg, sender: { ...msg.sender, ...updatedUser } }
+            : msg
+        )
+      );
+    };
+  
+    socket.on("userUpdated", handleUserUpdated);
+  
+    return () => {
+      socket.off("userUpdated", handleUserUpdated);
+    };
+  }, []);
+
   const handleEmojiClick = (emojiData) => {
     setInput(prev => prev + emojiData.emoji);
     setShowEmojiPicker(false);
@@ -198,76 +224,83 @@ export default function Chat() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) {
-      console.error("Message content cannot be empty");
-      return;
+        console.error("Message content cannot be empty");
+        return;
     }
 
     if (editingMessage) {
-      try {
-        const response = await fetch(`http://localhost:5000/api/messages/${editingMessage._id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ content: input }),
-        });
+        try {
+            const response = await fetch(`http://localhost:5000/api/messages/${editingMessage._id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ content: input }),
+            });
 
-        if (!response.ok) {
-          throw new Error(`Failed to edit message: ${response.statusText}`);
+            if (!response.ok) {
+                throw new Error(`Failed to edit message: ${response.statusText}`);
+            }
+
+            const updatedMessage = await response.json();
+            setMessages((prev) =>
+                prev.map((msg) => (msg._id === updatedMessage._id ? updatedMessage : msg))
+            );
+            console.log("Message updated successfully:", updatedMessage);
+        } catch (error) {
+            console.error("Failed to update message:", error);
         }
 
-        const updatedMessage = await response.json();
-        setMessages((prev) =>
-          prev.map((msg) => (msg._id === updatedMessage._id ? updatedMessage : msg))
-        );
-        console.log("Message updated successfully:", updatedMessage);
-      } catch (error) {
-        console.error("Failed to update message:", error);
-      }
-
-      setEditingMessage(null);
+        setEditingMessage(null);
+        setInput(""); // Сбрасываем строку ввода после редактирования
     } else {
-      const tempId = `temp-${Date.now()}`;
-      const tempMessage = {
-        _id: tempId,
-        content: input,
-        sender: {
-          _id: currentUser.id,
-          username: currentUser.username,
-        },
-        createdAt: new Date().toISOString(),
-        isOptimistic: true,
-        tempId,
-        replyTo: replyingTo,
-      };
+        const tempId = `temp-${Date.now()}`;
+        const tempMessage = {
+            _id: tempId,
+            content: input,
+            sender: {
+                _id: currentUser.id,
+                username: currentUser.username,
+            },
+            createdAt: new Date().toISOString(),
+            isOptimistic: true,
+            tempId,
+            replyTo: replyingTo,
+        };
 
-      setMessages((prev) => [...prev, tempMessage]);
-      setInput("");
+        setMessages((prev) => [...prev, tempMessage]);
+        setInput("");
 
-      socket.emit(
-        "sendMessage",
-        {
+        console.log("Sending message:", {
           chatId,
           content: input,
-          messageType: "text",
-          attachments: [],
           replyTo: replyingTo ? replyingTo._id : null,
-        },
-        (response) => {
-          if (!response.success) {
-            console.error("Failed to send message:", response.error);
-            alert(response.error); // Отображение ошибки пользователю
-          } else {
-            console.log("Message sent successfully:", response.messageId);
-          }
-        }
-      );
+        });
+
+        socket.emit(
+            "sendMessage",
+            {
+                chatId,
+                content: input,
+                messageType: "text",
+                attachments: [],
+                replyTo: replyingTo ? replyingTo._id : null,
+            },
+            (response) => {
+                if (!response.success) {
+                    console.error("Failed to send message:", response.error);
+                    alert(response.error); // Отображение ошибки пользователю
+                } else {
+                    console.log("Message sent successfully:", response.messageId);
+                }
+            }
+        );
     }
 
     // Сбрасываем состояние ответа
     setReplyingTo(null);
-  };
+};
 
   const handleContextMenu = (e, message) => {
     e.preventDefault();
@@ -282,33 +315,38 @@ export default function Chat() {
   };
 
   const handleDeleteMessage = async (message) => {
-    console.log("Delete button clicked for message:", message);
-    console.log("Message ID to delete:", message._id);
-    console.log("Current messages:", messages);
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this message?");
+        if (!confirmDelete) return reject("Deletion canceled");
   
-    const confirmDelete = window.confirm("Are you sure you want to delete this message?");
-    if (!confirmDelete) return;
+        setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
   
-    setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
+        try {
+          const response = await fetch(`http://localhost:5000/api/messages/${message._id}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
   
-    try {
-      const response = await fetch(`http://localhost:5000/api/messages/${message._id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+          if (!response.ok) {
+            throw new Error(`Failed to delete message: ${response.statusText}`);
+          }
   
-      if (!response.ok) {
-        throw new Error(`Failed to delete message: ${response.statusText}`);
+          socket.emit("deleteMessage", { messageId: message._id });
+          resolve("Message deleted successfully");
+        } catch (error) {
+          setMessages((prev) => [...prev, message]);
+          reject("Failed to delete message");
+        }
+      }),
+      {
+        loading: "Deleting message...",
+        success: "Message deleted successfully!",
+        error: "Failed to delete message.",
       }
-  
-      console.log("Message deleted successfully from the server");
-      socket.emit("deleteMessage", { messageId: message._id });
-    } catch (error) {
-      console.error("Failed to delete message from the server:", error);
-      setMessages((prev) => [...prev, message]);
-    }
+    );
   
     setContextMenu({ visible: false, x: 0, y: 0, message: null });
     setSelectedMessageId(null);
@@ -332,8 +370,22 @@ export default function Chat() {
     setReplyingTo(null); 
   };
 
+  const handleCopyMessage = (message) => {
+    navigator.clipboard.writeText(message.content)
+      .then(() => {
+        toast.success("Message copied to clipboard!");
+      })
+      .catch((err) => {
+        toast.error("Failed to copy message.");
+      });
+  
+    setContextMenu({ visible: false, x: 0, y: 0, message: null });
+    setSelectedMessageId(null);
+  };
+
   return (
     <div className="chat-container">
+      <Toaster richColors position="top-center" /> {/* Добавляем Toaster */}
       <div className="messages-container" ref={messageContainerRef}>
         {messages.length === 0 ? (
           <div className="no-messages">No messages yet</div>
@@ -373,7 +425,9 @@ export default function Chat() {
                       {message.replyTo && (
                         <div className="reply-preview">
                           <span className="reply-author">{message.replyTo.sender?.username || "Unknown"}</span>
-                          <div className="reply-text">{message.replyTo.content}</div>
+                          <div className="reply-text">
+                            {truncateText(message.replyTo.content, 35)}
+                          </div>
                         </div>
                       )}
                       <div className="message-bubble">
@@ -397,6 +451,7 @@ export default function Chat() {
           className="context-menu"
           style={{ top: contextMenu.y, left: contextMenu.x }}
         >
+          <button onClick={() => handleCopyMessage(contextMenu.message)}>Copy</button>
           <button onClick={() => handleReplyMessage(contextMenu.message)}>Reply</button>
           <button onClick={() => handleEditMessage(contextMenu.message)}>Edit</button>
           <button onClick={() => handleDeleteMessage(contextMenu.message)}>Delete</button>
@@ -409,7 +464,9 @@ export default function Chat() {
             <span>Replying to:</span>
             <div className="reply-preview">
               <span className="reply-author">{replyingTo.sender?.username || "Unknown"}</span>
-              <div className="reply-text">{replyingTo.content}</div>
+              <div className="reply-text">
+                {truncateText(replyingTo.content, 50)} {/* Ограничение длины текста */}
+              </div>
             </div>
             <button type="button" className="cancel-reply" onClick={handleCancelReply}>
               ✕

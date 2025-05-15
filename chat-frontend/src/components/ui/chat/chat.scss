@@ -164,23 +164,28 @@
   }
 }
 
-  .reply-preview {
-    display: flex;
-    flex-direction: column;
-    max-width: 80%;
-    overflow: hidden;
-    background-color: #58C1E8;
+.reply-preview {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  overflow: hidden;
+  background-color: rgba(88, 193, 232, 0.6);
+  border-left: 6px solid #0077a3;
+  padding: 8px; 
+  border-radius: 4px; 
+  color: #ffffff;
 }
+
 .replying-to {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f1f1f1;
-  border-left: 4px solid #007bff;
+  background-color: #807F7F;
   padding: 8px 12px;
+  color: #ffffff;
   margin-bottom: 8px;
   border-radius: 4px;
-  animation: fadeIn 0.3s ease-in-out;
+
 
 
     .reply-author {
@@ -192,7 +197,7 @@
 
     .reply-text {
       font-size: 0.85rem;
-      color: #555;
+      color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -202,21 +207,18 @@
   .cancel-reply {
     background: none;
     border: none;
-    color: #888;
+    color: #000000;
     font-size: 1.2rem;
     cursor: pointer;
     transition: color 0.2s;
 
     &:hover {
-      color: #000;
+      color: #353535;
     }
   }
 
 
 
-.replying-to.fade-out {
-  animation: fadeOut 0.3s ease-in-out forwards;
-}
 
 
 .message-content {
@@ -224,9 +226,9 @@
 }
 
 .message-bubble {
-  display: inline-flex;
+  display: flex;
+  justify-content: space-between; 
   align-items: flex-end;
-  gap: 8px;
   padding: 8px 12px;
   border-radius: 10px 10px 10px 0;
   background-color: #807F7F;
@@ -234,23 +236,24 @@
   word-break: break-word;
   color: #ffffff;
   max-width: 100%;
+  position: relative;
 
-  
   .message-text {
     font-size: 15px;
     line-height: 1.4;
+    flex: 1;
   }
-  
+
   .message-time {
-    float: right;
-    margin-left: 8px;
-    margin-top: 2px;
     font-size: 11px;
     color: #393838;
-    position: relative;
-    bottom: -3px;
+    margin-left: 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    align-self: flex-end;
   }
 }
+
 
 .message-form {
   position: sticky;
