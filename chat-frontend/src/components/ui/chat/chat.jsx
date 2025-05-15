@@ -6,6 +6,10 @@ import { io } from "socket.io-client";
 import { format } from 'date-fns';
 import { ReactComponent as EmojiIcon } from "../../../assets/icons/emoji.svg";
 import { ReactComponent as SendIcon } from "../../../assets/icons/send.svg";
+import { ReactComponent as CopyIcon } from "../../../assets/icons/copy.svg";
+import { ReactComponent as ReplyIcon } from "../../../assets/icons/reply.svg";
+import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
+import { ReactComponent as DeleteIcon } from "../../../assets/icons/delete.svg";
 import { Toaster, toast } from 'sonner'; 
 
 const socket = io("http://localhost:5000", {
@@ -451,10 +455,10 @@ export default function Chat() {
           className="context-menu"
           style={{ top: contextMenu.y, left: contextMenu.x }}
         >
-          <button onClick={() => handleCopyMessage(contextMenu.message)}>Copy</button>
-          <button onClick={() => handleReplyMessage(contextMenu.message)}>Reply</button>
-          <button onClick={() => handleEditMessage(contextMenu.message)}>Edit</button>
-          <button onClick={() => handleDeleteMessage(contextMenu.message)}>Delete</button>
+          <button onClick={() => handleCopyMessage(contextMenu.message)}><CopyIcon />Copy</button>
+          <button onClick={() => handleReplyMessage(contextMenu.message)}><ReplyIcon/>Reply</button>
+          <button onClick={() => handleEditMessage(contextMenu.message)}><EditIcon/>Edit</button>
+          <button onClick={() => handleDeleteMessage(contextMenu.message)}><DeleteIcon/>Delete</button>
         </div>
       )}
 

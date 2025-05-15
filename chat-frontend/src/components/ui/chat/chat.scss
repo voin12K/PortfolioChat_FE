@@ -79,15 +79,18 @@
 }
 
 .context-menu button {
-  display: block;
+  display: flex;
+  align-items: center;          /* Центрирование по вертикали внутри кнопки */
   background: none;
   border: none;
   color: #fff;
   padding: 5px 10px;
-  text-align: left;
   width: 100%;
   cursor: pointer;
+  gap: 8px;                     /* Расстояние между иконкой и текстом */
+  text-align: left;
 }
+
 
 .context-menu button:hover {
   background: #444;
