@@ -1,0 +1,15 @@
+.profile {
+    &__icon-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+    }
+
+    &__icon {
+        width: 24px;
+        height: 24px;
+    }
+}
