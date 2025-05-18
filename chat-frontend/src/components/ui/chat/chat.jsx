@@ -257,7 +257,7 @@ export default function Chat() {
         }
 
         setEditingMessage(null);
-        setInput(""); // Сбрасываем строку ввода после редактирования
+        setInput("");
     } else {
         const tempId = `temp-${Date.now()}`;
         const tempMessage = {
@@ -294,7 +294,7 @@ export default function Chat() {
             (response) => {
                 if (!response.success) {
                     console.error("Failed to send message:", response.error);
-                    alert(response.error); // Отображение ошибки пользователю
+                    alert(response.error);
                 } else {
                     console.log("Message sent successfully:", response.messageId);
                 }
@@ -302,7 +302,6 @@ export default function Chat() {
         );
     }
 
-    // Сбрасываем состояние ответа
     setReplyingTo(null);
 };
 
@@ -389,7 +388,7 @@ export default function Chat() {
 
   return (
     <div className="chat-container">
-      <Toaster richColors position="top-center" /> {/* Добавляем Toaster */}
+      <Toaster richColors position="top-center" />
       <div className="messages-container" ref={messageContainerRef}>
         {messages.length === 0 ? (
           <div className="no-messages">No messages yet</div>

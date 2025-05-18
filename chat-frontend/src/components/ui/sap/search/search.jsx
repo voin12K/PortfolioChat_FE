@@ -54,7 +54,7 @@ export default function Search() {
           setError(null);
         } catch (err) {
           console.error(err);
-          setError("Ошибка при выполнении поиска");
+          setError("Error while performing search");
         } finally {
           setLoading(false);
         }
@@ -80,7 +80,7 @@ export default function Search() {
         }
     
         if (myId === userId) {
-          alert('Нельзя создать чат с самим собой!');
+          alert('You cant create a chat with yourself');
           return;
         }
     
@@ -120,7 +120,7 @@ export default function Search() {
           localStorage.removeItem("token");
           navigate('/login');
         } else {
-          alert(error.response?.data?.message || 'Ошибка при создании чата');
+          alert(error.response?.data?.message || 'Error creating chat');
         }
       }
     };

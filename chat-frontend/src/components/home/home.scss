@@ -44,11 +44,11 @@
 
 .peoples {
   height: 100%;
-  flex-shrink: 0; /* предотвращает сжатие */
-  margin-right: 20px; /* отступ между peoples и chat */
+  flex-shrink: 0; 
+  margin-right: 20px; 
 }
 
 .chat {
-  flex-grow: 1; /* занимает всё оставшееся пространство */
+  flex-grow: 1; 
   height: 100%;
 }

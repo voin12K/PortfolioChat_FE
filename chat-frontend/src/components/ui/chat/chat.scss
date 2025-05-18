@@ -80,14 +80,14 @@
 
 .context-menu button {
   display: flex;
-  align-items: center;          /* Центрирование по вертикали внутри кнопки */
+  align-items: center;
   background: none;
   border: none;
   color: #fff;
   padding: 5px 10px;
   width: 100%;
   cursor: pointer;
-  gap: 8px;                     /* Расстояние между иконкой и текстом */
+  gap: 8px;
   text-align: left;
 }
 

@@ -48,7 +48,7 @@ const handleSubmit = async (e) => {
             const errorMessage = data.errors?.password || 
                                  data.errors?.email || 
                                  data.message || 
-                                 "Неверная почта или пароль";
+                                 "Incorrect email or password";
             toast.error(errorMessage);
             return;
         }
@@ -57,8 +57,8 @@ const handleSubmit = async (e) => {
         navigate("/");
 
     } catch (error) {
-        console.error("Ошибка при входе:", error);
-        toast.error(error.message || "Ошибка подключения к серверу");
+        console.error("Error logging in:", error);
+        toast.error(error.message || "Error connecting to server");
     }
 };
 

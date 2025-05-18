@@ -15,7 +15,7 @@ export default function Profile() {
             },
         })
         .then(res => {
-            if (!res.ok) throw new Error('Ошибка загрузки профиля');
+            if (!res.ok) throw new Error('Error loading profile');
             return res.json();
         })
         .then(data => {
@@ -23,7 +23,7 @@ export default function Profile() {
             setUsername(data.username || '');
             setPreview(data.profileImage || '');
         })
-        .catch(err => console.error('Ошибка загрузки профиля:', err));
+        .catch(err => console.error('Error loading profile:', err));
     }, []);
 
     const handleAvatarChange = (e) => {
@@ -50,13 +50,13 @@ export default function Profile() {
 
             const result = await res.json();
             if (!res.ok) {
-                setMessage(result.error || 'Ошибка обновления профиля');
+                setMessage(result.error || 'Profile update error');
             } else {
-                setMessage('Профиль успешно обновлён!');
+                setMessage('Profile updated successfully!');
             }
         } catch (error) {
-            console.error('Ошибка отправки:', error);
-            setMessage('Произошла ошибка при обновлении профиля');
+            console.error('Sending error:', error);
+            setMessage('There was an error updating your profile.');
         }
     };
 
