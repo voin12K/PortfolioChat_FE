@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Toaster, toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import './profile.scss';
 
 export default function Profile() {
@@ -6,7 +8,7 @@ export default function Profile() {
     const [username, setUsername] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [preview, setPreview] = useState('');
-    const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch('http://localhost:5000/api/auth/me', {
@@ -21,13 +23,25 @@ export default function Profile() {
         .then(data => {
             setName(data.name || '');
             setUsername(data.username || '');
-            setPreview(data.profileImage || '');
+            if (data.profileImage) {
+                setPreview(data.profileImage);
+            }
         })
-        .catch(err => console.error('Error loading profile:', err));
+        .catch(err => {
+            console.error('Error loading profile:', err);
+            toast.error('Failed to load profile');
+        });
     }, []);
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please select an image file');
+            return;
+        }
+
         setAvatar(file);
         setPreview(URL.createObjectURL(file));
     };
@@ -50,29 +64,67 @@ export default function Profile() {
 
             const result = await res.json();
             if (!res.ok) {
-                setMessage(result.error || 'Profile update error');
+                toast.error(result.error || 'Profile update error');
             } else {
-                setMessage('Profile updated successfully!');
+                toast.success('Profile updated successfully!');
             }
         } catch (error) {
             console.error('Sending error:', error);
-            setMessage('There was an error updating your profile.');
+            toast.error('There was an error updating your profile.');
         }
+    };
+
+    
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/auth');
+        toast.success('You have been logged out');
     };
 
     return (
         <div className="profile">
-            <h2>Настройки профиля</h2>
+            <Toaster position="top-center" richColors />
             <form onSubmit={handleSubmit} className="profile-form">
+                <div className="profile-header">
+                    <button 
+                        type="button" 
+                        className="back-button"
+                        onClick={() => navigate('/')}
+                    >
+                        Back
+                    </button>
+                    <h2>Profile settings</h2>
+                    <button 
+                        type="button" 
+                        className="logout-button"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
                 <div className="avatar-preview">
-                    {preview && <img src={preview} alt="Avatar" />}
+                    {preview ? (
+                        <img src={preview} alt="Аватар" />
+                    ) : (
+                        <div className="avatar-placeholder">
+                            <span>Select image</span>
+                        </div>
+                    )}
+                </div>
+                <div className="file-upload-wrapper">
+                    <span className="file-upload-text">Select an avatar</span>
+                    <label className="file-upload-button">
+                        Select file
+                        <input 
+                            type="file" 
+                            onChange={handleAvatarChange} 
+                            accept="image/*" 
+                            className="file-upload-input"
+                        />
+                    </label>
                 </div>
                 <label>
-                    Аватар:
-                    <input type="file" onChange={handleAvatarChange} />
-                </label>
-                <label>
-                    Имя:
+                    Name:
                     <input 
                         type="text" 
                         value={name} 
@@ -80,15 +132,14 @@ export default function Profile() {
                     />
                 </label>
                 <label>
-                    Никнейм:
+                    Nickname:
                     <input 
                         type="text" 
                         value={username} 
                         onChange={(e) => setUsername(e.target.value)} 
                     />
                 </label>
-                <button type="submit">Сохранить</button>
-                {message && <p className="message">{message}</p>}
+                <button type="submit">Save</button>
             </form>
         </div>
     );

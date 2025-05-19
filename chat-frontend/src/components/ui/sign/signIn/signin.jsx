@@ -53,6 +53,12 @@ const handleSubmit = async (e) => {
             return;
         }
 
+        if (data.user && data.user._id) {
+            localStorage.setItem("userId", data.user._id);
+        } else {
+            console.warn("userId is missing in login response", data);
+        }
+
         login(data.token);
         navigate("/");
 

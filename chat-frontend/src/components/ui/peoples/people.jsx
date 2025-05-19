@@ -9,8 +9,11 @@ export default function People() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const myUserId = localStorage.getItem("userId");
 
   useEffect(() => {
+    console.log("myUserId from localStorage:", myUserId);
+
     const fetchChats = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -38,7 +41,7 @@ export default function People() {
     };
 
     fetchChats();
-  }, []);
+  }, [myUserId]);
 
   const formatMessageTime = (dateString) => {
     const date = new Date(dateString);
@@ -61,82 +64,85 @@ export default function People() {
             {chats.length === 0 ? (
               <p className="no-chats">No active chats found</p>
             ) : (
-              chats.map((chat) => (
-                <div 
-                  key={chat._id} 
-                  className="People-item"
-                  onClick={() => handleChatClick(chat._id)}
-                  style={{ cursor: 'pointer' }} 
-                >
-                  {chat.type === 'private' ? (
-                    <div className="chat-info">
-                      <div className="avatar-and-content">
-                        {chat.users
-                          .filter(user => String(user._id) !== String(localStorage.getItem("userId")))
-                          .slice(1, 2)
-                          .map(user => (
-                            <React.Fragment key={user._id}>
-                              {user.profileImage ? (
-                                <img src={user.profileImage} alt={user.name} className="avatar" />
-                              ) : (
-                                <div className="avatar">{user.name.charAt(0).toUpperCase()}</div>
-                              )}
-                              <div className="content-wrapper">
-                                <div className="name-and-time">
-                                  <h3>{user.name}</h3>
-                                  {chat.lastMessage && (
-                                    <span className="message-time">
-                                      {formatMessageTime(chat.lastMessage.createdAt)}
-                                    </span>
-                                  )}
+              chats.map((chat) => {
+                console.log("chat.users:", chat.users);
+                return (
+                  <div 
+                    key={chat._id} 
+                    className="People-item"
+                    onClick={() => handleChatClick(chat._id)}
+                    style={{ cursor: 'pointer' }} 
+                  >
+                    {chat.type === 'private' ? (
+                      <div className="chat-info">
+                        <div className="avatar-and-content">
+                          {chat.users
+                            .filter(user => String(user._id) !== String(myUserId))
+                            .slice(0, 1)
+                            .map(user => (
+                              <React.Fragment key={user._id}>
+                                {user.profileImage ? (
+                                  <img src={user.profileImage} alt={user.name} className="avatar" />
+                                ) : (
+                                  <div className="avatar">{user.name.charAt(0).toUpperCase()}</div>
+                                )}
+                                <div className="content-wrapper">
+                                  <div className="name-and-time">
+                                    <h3>{user.name}</h3>
+                                    {chat.lastMessage && (
+                                      <span className="message-time">
+                                        {formatMessageTime(chat.lastMessage.createdAt)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="message-and-unread">
+                                    {chat.lastMessage && (
+                                      <p className="last-message">
+                                        {chat.lastMessage.content}
+                                      </p>
+                                    )}
+                                    {chat.unreadCount > 0 && (
+                                      <span className="unread-count">
+                                        {chat.unreadCount}
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
-                                <div className="message-and-unread">
-                                  {chat.lastMessage && (
-                                    <p className="last-message">
-                                      {chat.lastMessage.content}
-                                    </p>
-                                  )}
-                                  {chat.unreadCount > 0 && (
-                                    <span className="unread-count">
-                                      {chat.unreadCount}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </React.Fragment>
-                          ))}
+                              </React.Fragment>
+                            ))}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="chat-info">
-                      <div className="avatar-and-content">
-                        <div className="avatar">G</div>
-                        <div className="content-wrapper">
-                          <div className="name-and-time">
-                            <h3>{chat.name}</h3>
-                            {chat.lastMessage && (
-                              <span className="message-time">
-                                {formatMessageTime(chat.lastMessage.createdAt)}
-                              </span>
-                            )}
-                          </div>
-                          <div className="message-and-unread">
-                            <p>
-                              {chat.users.length} members
-                              {chat.lastMessage && ` • ${chat.lastMessage.content}`}
-                            </p>
-                            {chat.unreadCount > 0 && (
-                              <span className="unread-count">
-                                {chat.unreadCount}
-                              </span>
-                            )}
+                    ) : (
+                      <div className="chat-info">
+                        <div className="avatar-and-content">
+                          <div className="avatar">G</div>
+                          <div className="content-wrapper">
+                            <div className="name-and-time">
+                              <h3>{chat.name}</h3>
+                              {chat.lastMessage && (
+                                <span className="message-time">
+                                  {formatMessageTime(chat.lastMessage.createdAt)}
+                                </span>
+                              )}
+                            </div>
+                            <div className="message-and-unread">
+                              <p>
+                                {chat.users.length} members
+                                {chat.lastMessage && ` • ${chat.lastMessage.content}`}
+                              </p>
+                              {chat.unreadCount > 0 && (
+                                <span className="unread-count">
+                                  {chat.unreadCount}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         )}
