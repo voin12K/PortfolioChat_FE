@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './profile.scss';
 
 export default function Profile() {
@@ -9,6 +10,7 @@ export default function Profile() {
     const [avatar, setAvatar] = useState(null);
     const [preview, setPreview] = useState('');
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     useEffect(() => {
         fetch('http://localhost:5000/api/auth/me', {
@@ -74,10 +76,8 @@ export default function Profile() {
         }
     };
 
-    
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/auth');
+        logout();
         toast.success('You have been logged out');
     };
 
