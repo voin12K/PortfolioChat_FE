@@ -3,17 +3,19 @@ import "./people.scss";
 import axios from "axios";
 import { format } from 'date-fns';
 import { useNavigate } from "react-router-dom";
+import io from "socket.io-client";
+
+const SOCKET_URL = "http://localhost:5000"; 
 
 export default function People() {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [socket, setSocket] = useState(null);
   const navigate = useNavigate();
   const myUserId = localStorage.getItem("userId");
 
   useEffect(() => {
-    console.log("myUserId from localStorage:", myUserId);
-
     const fetchChats = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -34,7 +36,6 @@ export default function People() {
         setLoading(false);
         setError(null);
       } catch (err) {
-        console.error("Error fetching chats:", err);
         setError(err.response?.data?.message || "Failed to load chats");
         setLoading(false);
       }
@@ -42,6 +43,68 @@ export default function People() {
 
     fetchChats();
   }, [myUserId]);
+
+  useEffect(() => {
+    const newSocket = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") }
+    });
+    setSocket(newSocket);
+
+    newSocket.on("connect", () => {});
+    newSocket.on("disconnect", () => {});
+    newSocket.on("connect_error", (err) => {});
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+
+    const handleNewMessage = (message) => {
+      setChats(prevChats => {
+        const chatIndex = prevChats.findIndex(chat => {
+          const chatId = typeof message.chat === "object" ? message.chat._id : message.chat;
+          return chat._id === chatId;
+        });
+
+        if (chatIndex === -1) {
+          return prevChats;
+        }
+
+        const senderId = message.sender?._id || message.sender;
+        const isMyMessage = String(senderId) === String(myUserId);
+
+        const updatedChats = [...prevChats];
+        updatedChats[chatIndex] = {
+          ...updatedChats[chatIndex],
+          lastMessage: message,
+          unreadCount: isMyMessage
+            ? updatedChats[chatIndex].unreadCount || 0
+            : (updatedChats[chatIndex].unreadCount || 0) + 1
+        };
+
+        return updatedChats;
+      });
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, myUserId]);
+
+  useEffect(() => {
+    if (!socket || chats.length === 0) return;
+
+    chats.forEach(chat => {
+      socket.emit("joinChat", chat._id);
+    });
+  }, [socket, chats]);
 
   const formatMessageTime = (dateString) => {
     const date = new Date(dateString);
@@ -65,7 +128,6 @@ export default function People() {
               <p className="no-chats">No active chats found</p>
             ) : (
               chats.map((chat) => {
-                console.log("chat.users:", chat.users);
                 return (
                   <div 
                     key={chat._id} 
@@ -101,11 +163,6 @@ export default function People() {
                                         {chat.lastMessage.content}
                                       </p>
                                     )}
-                                    {chat.unreadCount > 0 && (
-                                      <span className="unread-count">
-                                        {chat.unreadCount}
-                                      </span>
-                                    )}
                                   </div>
                                 </div>
                               </React.Fragment>
@@ -130,11 +187,6 @@ export default function People() {
                                 {chat.users.length} members
                                 {chat.lastMessage && ` • ${chat.lastMessage.content}`}
                               </p>
-                              {chat.unreadCount > 0 && (
-                                <span className="unread-count">
-                                  {chat.unreadCount}
-                                </span>
-                              )}
                             </div>
                           </div>
                         </div>

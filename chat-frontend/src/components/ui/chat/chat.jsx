@@ -266,6 +266,7 @@ export default function Chat() {
             sender: {
                 _id: currentUser.id,
                 username: currentUser.username,
+                profileImage: currentUser.profileImage,
             },
             createdAt: new Date().toISOString(),
             isOptimistic: true,
