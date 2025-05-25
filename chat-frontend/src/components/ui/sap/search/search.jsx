@@ -25,7 +25,7 @@ export default function Search() {
       }
     };
   
-
+ 
     useEffect(() => {
       if (!search) {
         setResults([]);

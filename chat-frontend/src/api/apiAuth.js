@@ -11,7 +11,7 @@ export const register = async (userData) => {
   });
   return response.json();
 };
-
+ 
 export const login = async (credentials) => {
   const response = await fetch(`${BASE_URL}/login`, {
     method: "POST",

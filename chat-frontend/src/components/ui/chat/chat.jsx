@@ -424,7 +424,7 @@ export default function Chat() {
                         </div>
                       )}
                     </div>
-                    
+                     
                     <div className="message-content">
                       {message.replyTo && (
                         <div className="reply-preview">

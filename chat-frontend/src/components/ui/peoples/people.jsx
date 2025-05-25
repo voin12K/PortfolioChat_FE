@@ -31,7 +31,7 @@ export default function People() {
             Authorization: `Bearer ${token}`
           }
         });
-
+ 
         setChats(response.data);
         setLoading(false);
         setError(null);

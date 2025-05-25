@@ -11,7 +11,7 @@ export default function Profile() {
     const [preview, setPreview] = useState('');
     const navigate = useNavigate();
     const { logout } = useAuth();
-
+ 
     useEffect(() => {
         fetch('http://localhost:5000/api/auth/me', {
             headers: {
