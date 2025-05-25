@@ -149,8 +149,6 @@ export default function Search() {
                     onChange={(e) => setSearch(e.target.value)}
                     onFocus={() => setShowResults(true)}
                 />
-                {loading && <div className="Search-loading">Загрузка...</div>}
-                {error && <div className="Search-error">{error}</div>}
             </div>
 
             {showResults && (
