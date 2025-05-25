@@ -238,7 +238,7 @@ export default function Chat() {
 
     if (editingMessage) {
         try {
-            const response = await fetch(`http://localhost:5000/api/messages/${editingMessage._id}`, {
+            const response = await fetch(`https://portfoliochat-be.onrender.com/api/messages/${editingMessage._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
