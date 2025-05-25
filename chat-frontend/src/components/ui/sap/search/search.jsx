@@ -41,7 +41,7 @@ export default function Search() {
         try {
           const myId = getMyIdFromToken();
     
-          const response = await axios.get("http://localhost:5000/api/users/users", {
+          const response = await axios.get("https://portfoliochat-be.onrender.com/api/users/users", {
             params: { username: search },
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -91,7 +91,7 @@ export default function Search() {
           }
         };
     
-        const { data: chats = [] } = await axios.get('http://localhost:5000/api/chats/my', config);
+        const { data: chats = [] } = await axios.get('https://portfoliochat-be.onrender.com/api/chats/my', config);
     
         const existingChat = chats.find(chat =>
           !chat.isGroup &&

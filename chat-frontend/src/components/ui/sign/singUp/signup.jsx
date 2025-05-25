@@ -50,7 +50,7 @@ const handleSubmit = async (e) => {
     if (!validate()) return;
 
     try {
-        const registerResponse = await fetch("http://localhost:5000/api/auth/register", {
+        const registerResponse = await fetch("https://portfoliochat-be.onrender.com/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),

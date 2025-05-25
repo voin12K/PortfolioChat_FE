@@ -12,12 +12,16 @@ import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../../assets/icons/delete.svg";
 import { Toaster, toast } from 'sonner'; 
 
-const socket = io("http://localhost:5000", {
+const backendUrl = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000' 
+  : 'https://portfoliochat-be.onrender.com';
+
+const socket = io(backendUrl, {
   auth: {
     token: localStorage.getItem("token"),
   },
+  withCredentials: true,
 });
-
 const getUserFromToken = () => {
   const token = localStorage.getItem("token");
   if (!token) return null;
@@ -157,7 +161,7 @@ export default function Chat() {
 
     const loadInitialMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/chats/${chatId}/messages`, {
+        const response = await fetch(`https://portfoliochat-be.onrender.com/api/chats/${chatId}/messages`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
