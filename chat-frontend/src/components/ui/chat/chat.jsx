@@ -331,7 +331,7 @@ export default function Chat() {
         setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
   
         try {
-          const response = await fetch(`http://localhost:5000/api/messages/${message._id}`, {
+          const response = await fetch(`https://portfoliochat-be.onrender.com/api/messages/${message._id}`, {
             method: "DELETE",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
