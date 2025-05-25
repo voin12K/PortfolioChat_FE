@@ -50,7 +50,7 @@ const handleSubmit = async (e) => {
     if (!validate()) return;
 
     try {
-        const registerResponse = await fetch("https://portfoliochat-be.onrender.com/api/auth/register", {
+        const registerResponse = await fetch("http://localhost:5000/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
@@ -69,7 +69,7 @@ const handleSubmit = async (e) => {
 
         toast.success("Registration successful! Logging you in...");
 
-        const loginResponse = await fetch("https://portfoliochat-be.onrender.com/api/auth/login", {
+        const loginResponse = await fetch("localhost:5000/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

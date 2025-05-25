@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 
-const SOCKET_URL = "https://portfoliochat-be.onrender.com"; 
+const SOCKET_URL = "http://localhost:5000"; 
 
 export default function People() {
   const [chats, setChats] = useState([]);
@@ -26,7 +26,7 @@ export default function People() {
           return;
         }
 
-        const response = await axios.get("https://portfoliochat-be.onrender.com/api/chats/my", {
+        const response = await axios.get("http://localhost:5000/api/chats/my", {
           headers: {
             Authorization: `Bearer ${token}`
           }

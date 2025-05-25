@@ -13,7 +13,7 @@ export default function Profile() {
     const { logout } = useAuth();
 
     useEffect(() => {
-        fetch('https://portfoliochat-be.onrender.com/api/auth/me', {
+        fetch('http://localhost:5000/api/auth/me', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
@@ -56,7 +56,7 @@ export default function Profile() {
         formData.append('username', username);
 
         try {
-            const res = await fetch('https://portfoliochat-be.onrender.com/api/users/profile', {
+            const res = await fetch('https://localhost:5000/api/users/profile', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
