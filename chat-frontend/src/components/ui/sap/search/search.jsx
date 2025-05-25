@@ -106,7 +106,7 @@ export default function Search() {
         }
     
         const { data: newChat } = await axios.post(
-          'http://localhost:5000/api/chats/private',
+          'https://portfoliochat-be.onrender.com/api/chats/private',
           { userId1: myId, userId2: userId },
           config
         );
