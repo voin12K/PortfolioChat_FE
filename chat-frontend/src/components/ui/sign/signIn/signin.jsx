@@ -99,9 +99,6 @@ const handleSubmit = async (e) => {
                     <button type="submit" className="Login-buttall-buttlog">
                         Log In
                     </button>
-                    <button type="button" className="Login-buttall-buttlog-withG">
-                        Log In with <GoogleIcon />
-                    </button>
                 </div>
                 <p className="Login-logup">
                     Don’t have an account?{" "}
