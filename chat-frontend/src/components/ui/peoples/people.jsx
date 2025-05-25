@@ -44,20 +44,28 @@ export default function People() {
     fetchChats();
   }, [myUserId]);
 
-  useEffect(() => {
-    const newSocket = io(SOCKET_URL, {
-      auth: { token: localStorage.getItem("token") }
-    });
-    setSocket(newSocket);
+useEffect(() => {
+  const newSocket = io(SOCKET_URL, {
+    auth: { token: localStorage.getItem("token") },
+    transports: ['websocket'],  
+  });
+  setSocket(newSocket);
 
-    newSocket.on("connect", () => {});
-    newSocket.on("disconnect", () => {});
-    newSocket.on("connect_error", (err) => {});
+  newSocket.on("connect", () => {
+    console.log('Socket connected:', newSocket.id);
+  });
+  newSocket.on("disconnect", () => {
+    console.log('Socket disconnected');
+  });
+  newSocket.on("connect_error", (err) => {
+    console.error('Socket connection error:', err.message);
+  });
 
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
+  return () => {
+    newSocket.disconnect();
+  };
+}, []);
+
 
   useEffect(() => {
     if (!socket) {
